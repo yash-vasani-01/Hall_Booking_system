@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        margin: 0; 
+    }
+
+    .seminar-booking {
+        border-radius: 10px;
+        background-color: #f9f7f7;
+        max-width: 100%;
+        height: 88.5vh; 
+        margin: 0 auto;
+        padding: 0; 
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; 
+    }
+    main {
+        background-color: rgba(51, 114, 154, 0.43);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: start; 
+        padding: 20px; 
+        overflow-y: auto; 
+        flex-grow: 1;
+    }
+
+    .content-wrapper {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .section-title {
+        color: #000;
+        letter-spacing: 2.69px;
+        text-align: center;
+        font: 30px "Inria Serif", serif;
+        margin-bottom: 1rem;
+        margin-top: 0rem;
+    }
+
+    .form-container {
+        border-radius: 30px;
+        background-color: #fafdff;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        width: 90%;
+        max-width: 800px; 
+        margin: 0 auto; 
+        margin-bottom: -10rem;
+    }
+
+    .form-section-title {
+        color: #000;
+        align-self: start;
+        font: 400 28px Inter, sans-serif;
+        margin-bottom: 30px;
+    }
+
+    .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; 
+    }
+
+    .form-row {
+        display: flex;
+        align-items: center;
+        gap: 10px; 
+        width: 100%;
+    }
+
+    .form-label {
+        color: #000;
+        letter-spacing: 1.33px;
+        text-align: left;
+        font: 400 18px "Inria Serif", serif;
+        flex: 1;
+    }
+
+    .form-input {
+        border-radius: 20px;
+        background-color: #d9d9d9;
+        flex: 2;
+        padding: 15px;
+        font: 400 18px/1.2 Inter, sans-serif;
+    }
+
+    .form-checkbox {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-checkbox input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        margin-right: 12px;
+    }
+
+    .equipment-section {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .equipment-row {
+        display: flex;
+        gap: 20px; /* Adjusted gap between equipment items */
+        align-items: center;
+        flex-wrap: wrap; /* Wrap items to the next line if necessary */
+    }
+
+    .equipment-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-actions {
+        display: flex;
+        margin-top: 20px; 
+        gap: 20px; 
+        justify-content: center;
+    }
+
+    .action-button {
+        border-radius: 30px;
+        background-color: #d9d9d9;
+        padding: 15px 40px;
+        font: 400 18px/1.2 Inter, sans-serif;
+        cursor: pointer;
+        border: none;
+    }
+
+    @media (max-width: 1366px) {
+        main {
+            padding: 15px;
+        }
+
+        .section-title {
+            font-size: 36px;
+        }
+
+        .form-container {
+            padding: 30px;
+            max-width: 1200px;
+        }
+
+        .form-section-title {
+            font-size: 24px;
+        }
+
+        .form-label,
+        .form-input,
+        .equipment-label {
+            font-size: 16px;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .form-actions {
+            margin-top: 20px; /* Margin for spacing above actions */
+        }
+
+        .action-button {
+            font-size: 16px;
+            padding: 12px 30px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .nav-container {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .form-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-input {
+            width: 100%;
+        }
+
+        .equipment-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }    
+    .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s ease;
+    }
+  
+    .popup-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        width: 300px;
+    }
+  
+    .popup .alert {
+        font-size: 16px;
+        margin-bottom: 15px; 
+    }
+    .alert.success {
+        color: #155724 ;
+    }
+    .alert.error{
+        color: #721c24 ;
+    }
+  
+    .close-popup {
+        background-color: #284b63;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+  
+    .close-popup:hover {
+        background-color: #1c3d5a;
+    }
+  
+    .popup.show {
+        visibility: visible;
+        opacity: 1;
+    }
+</style>
+
+<body>
+    <div class="seminar-booking">
+        <main>
+            <div class="content-wrapper">
+                <h1 class="section-title">Add Seminar Hall Details</h1>
+                {% if messages %}
+                    <div id="message-popup" class="popup">
+                        <div class="popup-content">
+                            {% for message in messages %}
+                                <p class="alert {{ message.tags }}">{{ message }}</p>
+                            {% endfor %}
+                            <button class="close-popup" onclick="closePopup()">Close</button>
+                        </div>
+                    </div>
+                {% endif %}
+                <form method="POST" action="{% url 'add_hall' %}" class="form-container">
+                    {% csrf_token %}
+                    <h2 class="form-section-title">Basic Information :</h2>
+                    <div class="form-fields">
+                        <div class="form-row">
+                            <label for="institute-name" class="form-label">Institute Name :</label>
+                            <select id="institute-name" name="institute_name" class="form-input" aria-label="Institute Name" required>
+                                <option value="" disabled selected>Select Institute</option>
+                                <option value="CSPIT">CSPIT</option>
+                                <option value="DEPSTAR">DEPSTAR</option>
+                                <option value="RPCP">RPCP</option>
+                                <option value="PDPIAS">PDPIAS</option>
+                                <option value="Ashok and Rita patel institute of physiotherapy">Ashok and Rita patel institute of physiotherapy</option>
+                                <option value="IIIM">IIIM</option>
+                                <option value="BDIPS">BDIPS</option>
+                                <option value="CMPICA">CMPICA</option>
+                                <option value="Manikaka Topawala Institute of Nursing">Manikaka Topawala Institute of Nursing</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="hall-name" class="form-label">Hall Name :</label>
+                            <input type="text" id="hall-name" name="hall_name" class="form-input" aria-label="Hall Name" required/>
+                        </div>
+                        <div class="form-row">
+                            <label for="location" class="form-label">Location :</label>
+                            <input type="text" id="location" name="location" class="form-input" aria-label="Location" required/>
+                        </div>
+                        <div class="form-row">
+                            <label for="capacity" class="form-label">Capacity :</label>
+                            <input type="number" id="capacity" name="capacity" class="form-input" aria-label="Capacity" required/>
+                        </div>
+                    </div>
+                    <div class="equipment-section">
+                        <h3 class="equipment-title">Available Equipment:</h3>
+                        <div class="equipment-row">
+                            <div class="equipment-item">
+                                <input type="checkbox" id="projector" name="projector" aria-label="Projector"/>
+                                <label for="projector">Projector</label>
+                            </div>
+                            <div class="equipment-item">
+                                <input type="checkbox" id="wifi" name="wifi" aria-label="Wifi"/>
+                                <label for="wifi">Internet / Wifi</label>
+                            </div>
+                            <div class="equipment-item">
+                                <input type="checkbox" id="audio-system" name="audio_system" aria-label="Audio System"/>
+                                <label for="audio-system">Audio System</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="action-button">Submit</button>
+                        <button type="reset" class="action-button">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showPopup() {
+            const popup = document.getElementById('message-popup');
+            popup.classList.add('show');
+        }
+    
+       
+        function closePopup() {
+            const popup = document.getElementById('message-popup');
+            popup.classList.remove('show');
+        }
+    
+        window.onload = function() {
+            const popup = document.getElementById('message-popup');
+            if (popup) {
+                showPopup();
+            }
+        }
+    </script>
+</body>
+{% endblock content %}

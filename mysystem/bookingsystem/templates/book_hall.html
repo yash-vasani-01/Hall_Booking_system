@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+{% block content %}
+ <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Inter, sans-serif;
+      background-color: white;
+      box-sizing: border-box;
+      overflow: hidden; /* Prevent scrolling */
+    }
+    .booking-section {
+      border-radius: 20px;
+      background-color: #b8c9d3;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow: hidden; /* Prevent scrolling */
+    }
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 800px;
+      background: white;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box; /* Ensure padding is included in width */
+    }
+    .section-title {
+      color: #000;
+      text-align: center;
+      margin-top: 9px;
+      font-weight: 500;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+    .form-container {
+      border-radius: 24px;
+      background-color: rgba(217, 217, 217, 0.9);
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box; /* Prevent overflow */
+    }
+    .form-row {
+      display: flex;
+      margin-bottom: 16px;
+      flex-direction: column;
+    }
+    .form-label {
+      color: #000;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+    .time-input {
+      flex: 1;
+      border-radius: 5px;
+      background-color: #fff;
+      height: 40px;
+      border: 1px solid #ccc;
+      padding: 0 10px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .form-input {
+      border-radius: 5px;
+      background-color: #fff;
+      width: 100%;
+      height: 40px;
+      border: 1px solid #ccc;
+      padding: 0 10px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .time-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      width: 100%;
+      box-sizing: border-box; /* Prevent overflow */
+    }
+    .submit-button {
+      border-radius: 8px;
+      background-color: #1879b7;
+      width: 50%;
+      justify-content: center;
+      color: #fff;
+      margin-top: 20px;
+      padding: 10px;
+      font-family: Roboto, sans-serif;
+      font-weight: 400;
+      font-size: 1.5rem;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-align: center;
+      align-self: center; /* Center the button */
+    }
+
+    .submit-button:hover {
+      background-color: #1567a0;
+    }
+    .submit-button:focus {
+      outline: 3px solid #0056b3;
+      outline-offset: 2px;
+    }
+    @media (min-width: 768px) {
+      .form-row {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      .form-label {
+        width: 30%;
+      }
+      .form-input,
+      .time-input {
+        width: 65%;
+      }
+      .time-row {
+        flex-direction: row;
+        gap: 20px;
+      }
+    }
+    @media (min-width: 1024px) {
+      .main-content {
+        max-width: 700px;
+      }
+      .section-title {
+        font-size: 2.75rem;
+      }
+      .form-input {
+        font-size: 1.1rem;
+      }
+      .submit-button {
+        font-size: 1.75rem;
+      }
+    }
+    @media (max-width: 768px) {
+      .main-content {
+        max-width: 95%;
+        padding: 15px;
+      }
+      .form-row {
+        flex-direction: column;
+      }
+      .form-label {
+        font-size: 0.9rem;
+      }
+      .form-input,
+      .time-input {
+        font-size: 0.9rem;
+        height: 36px;
+      }
+      .submit-button {
+        font-size: 1.2rem;
+      }
+    }
+    @media (max-width: 600px) {
+      .section-title {
+        font-size: 2rem;
+      }
+      .form-input,
+      .time-input {
+        font-size: 0.85rem;
+        height: 34px;
+      }
+      .submit-button {
+        font-size: 1.1rem;
+      }
+    }
+    @media (max-width: 400px) {
+      .submit-button {
+        font-size: 1rem;
+      }
+    }
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0s, opacity 0.3s ease;
+  }
+
+  .popup-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: 300px;
+  }
+
+  .popup .alert {
+      font-size: 16px;
+      margin-bottom: 15px; 
+  }
+  .alert.success {
+      color: #155724 ;
+  }
+  .alert.error{
+      color: #721c24 ;
+  }
+
+  .close-popup {
+      background-color: #284b63;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  }
+
+  .close-popup:hover {
+      background-color: #1c3d5a;
+  }
+
+  .popup.show {
+      visibility: visible;
+      opacity: 1;
+  }
+  </style>
+<body>
+  <section class="booking-section">
+    <main class="main-content">
+      <h1 class="section-title">Booking Request</h1>
+      {% if messages %}
+      <div id="message-popup" class="popup">
+          <div class="popup-content">
+              {% for message in messages %}
+                  <p class="alert {{ message.tags }}">{{ message }}</p>
+              {% endfor %}
+              <button class="close-popup" onclick="closePopup()">Close</button>
+          </div>
+      </div>
+          {% endif %}
+      <form class="form-container" method="post">
+            {% csrf_token %}
+          <div class="form-row">
+            <label for="username" class="form-label">Username :</label>
+            <input
+              type="text"
+              id="username"
+              class="form-input"
+              aria-label="Username"
+              name="requester_name"
+              value="{{ request.user.username }}"
+              />
+          </div>
+        <div class="form-row">
+          <label for="institute-name" class="form-label"
+            >Institute Name :</label
+          >
+          <input
+            type="text"
+            id="institute-name"
+            class="form-input"
+            aria-label="Institute Name"
+            name="institute_name"
+            value="{{ hall.institute_name }}"
+          />
+        </div>
+        <div class="form-row">
+            <label for="seminar-hall" class="form-label">Seminar-Hall :</label>
+            <input
+            type="text"
+            id="seminar-hall"
+            class="form-input"
+            aria-label="Seminar-Hall"
+            name="hall_name"
+            value="{{ hall.hall_name }}"
+          />
+        </div>
+        <div class="form-row">
+          <label for="date" class="form-label">Date :</label>
+          <input type="date" id="date" class="form-input" aria-label="Date"  name="date" required/>
+        </div>
+        <div class="form-row time-row">
+          <label for="start-time" class="form-label">Starting Time :</label>
+          <input
+            type="time"
+            id="start-time"
+            class="time-input"
+            aria-label="Start Time"name="start_time"
+            required
+
+          />
+
+          <label for="end-time" class="form-label">Ending Time :</label>
+          <input
+            type="time"
+            id="end-time"
+            class="time-input"
+            aria-label="End Time"
+            name="end_time"
+            required
+          />
+        </div>
+        <button type="submit" class="submit-button">Send Request</button>
+      </form>
+    </main>
+  </section>
+  <script>
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById("date").setAttribute('min', today);
+      
+      function showPopup() {
+          const popup = document.getElementById('message-popup');
+          popup.classList.add('show');
+      }
+  
+     
+      function closePopup() {
+          const popup = document.getElementById('message-popup');
+          popup.classList.remove('show');
+      }
+  
+      window.onload = function() {
+          const popup = document.getElementById('message-popup');
+          if (popup) {
+              showPopup();
+          }
+      }
+</script>
+</body>
+{% endblock content %}

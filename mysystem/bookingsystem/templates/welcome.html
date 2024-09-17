@@ -1,0 +1,196 @@
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | Seminar Hall Booking System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background: linear-gradient(135deg, #0066cc, #004080);
+            color: #fff;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header .logo img {
+            max-width: 400px;
+            margin-bottom: 20px;
+
+            animation: logoFadeIn 1s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin: 20px 0;
+            animation: fadeIn 1.5s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        header .tagline {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 1.2px;
+            animation: fadeInUp 2s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes logoFadeIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+       
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            background-color: #f9f9f9;
+        }
+
+        .intro {
+            text-align: center;
+            max-width: 700px;
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 1.5s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        .intro h2 {
+            font-size: 2.5rem;
+            color: #0066cc;
+            margin-bottom: 20px;
+        }
+
+        .intro p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .intro .btn {
+            text-decoration: none;
+            color: #fff;
+            background-color: #0066cc;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .intro .btn:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background-color: rgba(0, 0, 0, 0.1);
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            z-index: -1;
+            transition: transform 0.5s ease;
+        }
+
+        .intro .btn:hover:before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .intro .btn:hover {
+            background-color: #004080;
+        }
+
+        footer {
+            background-color: #0066cc;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9rem;
+            animation: fadeInUp 2s ease-in-out forwards;
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            {% load static %}
+            <img src="{% static 'images/logo.jpg' %}" alt="Charusat University Logo">
+        </div>
+        <h1>Welcome to Charusat University Seminar Hall Booking System</h1>
+        <p class="tagline">Effortlessly Manage Your Events</p>
+    </header>
+
+    <main>
+        <section class="intro">
+            <h2>Book Seminar Halls with Ease</h2>
+            <p>Whether you need a hall for a seminar, workshop, or event, our booking system is designed to make the
+                process simple and efficient. Explore our platform and reserve your space now.</p>
+            <a href="{% url "login" %}" class="btn">Get Started</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Charusat University. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>
+{% endblock content %}

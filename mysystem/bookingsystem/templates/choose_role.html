@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Arial', sans-serif;
+    }
+    .register-container {
+        background-color: #afc2cd;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .register-content {
+        display: flex;
+        width: 100%;
+        max-width: 1200px;
+        gap: 20px;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex: 1;
+        min-height: 0;
+    }
+    .register-image {
+        width: 30%;
+        max-height: 40vh;
+        object-fit: contain;
+        margin-top: 13%;
+        margin-left: 8%;
+    }
+    .register-form-wrapper {
+        width: 45%;
+        height: 60vh;
+        border-radius: 20px;
+        background-color: #fff;
+        padding: 30px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        margin-top: 10%;
+    }
+    .register-form {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+    .register-title {
+        text-align: center;
+        font: bold 42px 'Khula', sans-serif;
+        margin-top: -10px;
+    }
+    .role-button {
+        border-radius: 10px;
+        background-color: #284b63;
+        color: #fff;
+        padding: 15px;
+        font: bold 22px 'Inter', sans-serif;
+        border: none;
+        cursor: pointer;
+        margin-top: 50px;
+        width: 70%;
+        max-width: 300px;
+        text-decoration: none;
+        text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+        .register-content {
+            flex-direction: column;
+            align-items: center;
+        }
+        .register-image, .register-form-wrapper {
+            width: 90%;
+            max-height: none;
+        }
+        .register-image {
+            max-height: 30vh;
+            margin: 20px 0;
+        }
+        .register-form-wrapper {
+            height: auto;
+            overflow-y: visible;
+        }
+        .register-title {
+            font-size: 32px;
+        }
+        .role-button {
+            font-size: 18px;
+            padding: 12px;
+        }
+    }
+</style>
+
+<body> 
+    <div class="register-container">
+        <div class="register-content">
+            <img loading="lazy" src="{% static 'images/logo1.png' %}" class="register-image" alt="Registration illustration" />
+            <div class="register-form-wrapper">
+                <form class="register-form">
+                    {% csrf_token %}
+                    <h1 class="register-title">Choose Your Role</h1>
+                    <hr style="width:100%;text-align:left;margin-left:0;margin-top:-10px;margin-bottom:20px">
+                    <a href="{% url "admin_request" %}" id="admin-role" class="role-button" role="button" name='role'>Admin</a>
+                    <a href="{% url "faculty_page" %}" id="faculty-role" class="role-button" name='role' role="button">Faculty</a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Global settings */
+    body, html {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        height: 100%;
+        background-color: #f4f4f4;
+    }
+
+    .requests-container {
+        background-color:  #b8c9d3;
+        display: flex;
+        flex-direction: column;
+        height: 88.9vh;
+        padding: 20px;
+    }
+
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+        position: relative;
+        flex: 1;
+        width: 90%;
+        max-width: 1200px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .requests-title {
+        color: #004c91;
+        font-weight: 600;
+        font-size: 2rem;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .requests-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 0 10px;
+    }
+
+    /* Styling for each request */
+    .request-item {
+        background-color: #fdfdfd;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .request-item:hover {
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .request-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .request-number, 
+    .hall-name, 
+    .request-date, 
+    .request-time, 
+    .request-status {
+        font-size: 16px;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .request-label {
+        font-weight: 600;
+        color: #555;
+        margin-right: 5px;
+    }
+
+    .request-detail-wrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    /* Cancel button styling */
+    .cancel-button {
+        border-radius: 8px;
+        background-color: #e74c3c;
+        color: #fff;
+        padding: 10px 15px;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        align-self: center;
+    }
+
+    .cancel-button:hover {
+        background-color: #c0392b;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .request-item {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .request-detail-wrapper {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .cancel-button {
+            align-self: flex-start;
+        }
+    }
+    .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s ease;
+    }
+  
+    .popup-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        width: 300px;
+    }
+  
+    .popup .alert {
+        font-size: 16px;
+        margin-bottom: 15px; 
+    }
+    .alert.success {
+        color: #155724 ;
+    }
+    .alert.error{
+        color: #721c24 ;
+    }
+  
+    .close-popup {
+        background-color: #284b63;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+  
+    .close-popup:hover {
+        background-color: #1c3d5a;
+    }
+  
+    .popup.show {
+        visibility: visible;
+        opacity: 1;
+    }
+</style>
+
+<body>
+    <section class="requests-container">
+        <main class="main-content">
+            <h1 class="requests-title">Your Booking Requests</h1>
+
+            <div class="requests-list">
+                {% if messages %}
+                    <div id="message-popup" class="popup">
+                        <div class="popup-content">
+                            {% for message in messages %}
+                                <p class="alert {{ message.tags }}">{{ message }}</p>
+                            {% endfor %}
+                            <button class="close-popup" onclick="closePopup()">Close</button>
+                        </div>
+                    </div>
+                 {% endif %}
+                {% if requests %}
+                    {% for request in requests %}
+                    <article class="request-item">
+                        <div class="request-details">
+                            <div class="request-detail-wrapper">
+                                <span class="request-label">Request :</span>
+                                <span class="request-number">{{ forloop.counter }}</span>
+                            </div>
+
+                            <div class="request-detail-wrapper">
+                                <span class="request-label">Hall Name:</span>
+                                <span class="hall-name">{{ request.hall_name }}</span>
+                            </div>
+
+                            <div class="request-detail-wrapper">
+                                <span class="request-label">Date:</span>
+                                <span class="request-date">{{ request.date }}</span>
+                            </div>
+
+                            <div class="request-detail-wrapper">
+                                <span class="request-label">Time:</span>
+                                <span class="request-time">{{ request.start_time }} - {{ request.end_time }}</span>
+                            </div>
+
+                            <div class="request-detail-wrapper">
+                                <span class="request-label">Status:</span>
+                                <span class="request-status">{{ request.status }}</span>
+                            </div>
+                        </div>
+                        <form method="POST" action="{% url 'cancel_request' request.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="cancel-button">Cancel</button>
+                        </form>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <p>No requests found.</p>
+                {% endif %}
+            </div>
+        </main>
+    </section>
+    <script>
+          function showPopup() {
+              const popup = document.getElementById('message-popup');
+              popup.classList.add('show');
+          }
+      
+         
+          function closePopup() {
+              const popup = document.getElementById('message-popup');
+              popup.classList.remove('show');
+          }
+      
+          window.onload = function() {
+              const popup = document.getElementById('message-popup');
+              if (popup) {
+                  showPopup();
+              }
+          }
+    </script>
+</body>
+{% endblock content %}

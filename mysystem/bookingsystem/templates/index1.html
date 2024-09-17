@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>Welcome to our website</h1>
+
+    <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">No</th>
+            <th scope="col">Username</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone </th>
+            <th scope="col">City</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        {% if alldata %}
+            {% for data in alldata %}
+                <tr>
+                    <td><a href="{% url "record" data.id %}">{{data.id}}</a></td>
+                    <td>{{data.username}}</td>
+                    <td>{{data.email}}</td>
+                    <td>{{data.phone}}</td>
+                    <td>{{data.city}}</td>
+                    <td>
+                    {% for i in data.status %}
+                    {{i}}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}</td>
+                   
+                </tr>
+            {% endfor %}
+        
+        {% endif %}
+           
+          </tr>
+        </tbody>
+      </table>
+{% endblock %}

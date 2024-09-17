@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .email-header {
+            background-color: #004080;
+            padding: 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .email-header img {
+            max-width: 50%;
+            height: auto;
+        }
+        .email-header h1 {
+            margin: 15px 0 0 0;
+            font-size: 22px;
+            font-weight: 600;
+        }
+        .email-content {
+            padding: 30px;
+            color: #333333;
+            line-height: 1.8;
+        }
+        .email-content p {
+            font-size: 16px;
+            margin: 15px 0;
+        }
+        .booking-details {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .booking-details p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        .status-section {
+            margin: 30px 0;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            transition: background-color 0.3s ease;
+        }
+        .status-accepted {
+            background-color: #28a745;
+            box-shadow: 0px 4px 15px rgba(40, 167, 69, 0.5);
+        }
+        .status-rejected {
+            background-color: #dc3545;
+            box-shadow: 0px 4px 15px rgba(220, 53, 69, 0.5);
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #666666;
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer a {
+            color: #004080;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        
+        <!-- Header with university logo -->
+        <div class="email-header">
+            <img src="https://i.imgur.com/vtzL7eI.png" alt="University Logo">
+            <h1>{{ action|title }} - Seminar Hall Booking</h1>
+        </div>
+
+        <!-- Email Content -->
+        <div class="email-content">
+            <p>Dear {{ requester_name }},</p>
+
+            {% if action == "accept" %}
+            <p>We are pleased to inform you that your booking request for the seminar hall has been <strong>Accepted</strong>.</p>
+            {% elif action == "reject" %}
+            <p>Unfortunately, your booking request for the seminar hall has been <strong>Rejected</strong>.</p>
+            {% endif %}
+
+            <!-- Booking Details -->
+            <div class="booking-details">
+                <p><strong>Institute:</strong> {{ institute_name }}</p>
+                <p><strong>Hall:</strong> {{ hall_name }}</p>
+                <p><strong>Date:</strong> {{ date }}</p>
+                <p><strong>Time:</strong> {{ start_time }} - {{ end_time }}</p>
+            </div>
+
+            <!-- Status Section -->
+            <div class="status-section {% if action == 'accept' %}status-accepted{% else %}status-accepted{% endif %}">
+                Your request has been {{ action }}.
+            </div>
+
+            <p>Thank you for using our Seminar Hall Booking System.</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>If you have any questions, please contact us at <a href="mailto:{{ admin_email }}">support@university.com</a></p>
+            <p>© 2024 {{ university_name }}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

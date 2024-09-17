@@ -1,0 +1,343 @@
+
+{% include "navbar.html" %}
+{% load static %}
+  <style>
+    body {
+      font-family: Inter, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #b8c9d3;
+    }
+    .seminar-hall-details {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 8px;
+    }
+    .main-content {
+      display: flex;
+      flex-direction: row-reverse; 
+      margin-top: 20px;
+      gap: 20px;
+    }
+    .image-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .hall-image {
+      max-width: 30%; 
+      height: auto; 
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+    .book-button {
+      background-color: #1879b7;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+      align-self: center;
+      transition: background-color 0.3s ease, transform 0.3s ease,
+        box-shadow 0.3s ease;
+    }
+
+    .book-button:hover {
+      background-color: #0f5e8c;
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .book-button:active {
+      background-color: #0a4565;
+      transform: scale(0.98);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .info-section {
+      flex: 1;
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 4%;
+    }
+    #one{
+        margin-top: 2%;
+    }
+    .section-title {
+      font-size: 24px;
+      margin-bottom: 15px;
+      text-align: center;
+      
+    }
+    .info-container {
+      background-color: #d9d9d9;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      width: 90%;
+      margin: 0 auto;
+    }
+    .info-row {
+      margin-bottom: 15px;
+    }
+    .info-label {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    .info-value {
+      width: 95%;
+      padding: 8px;
+      border: 1px solid #000;
+      border-radius: 4px;
+      background-color: #fff;
+      font-weight: normal;
+    }
+    #hall-options {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      background-color: transparent;
+    }
+    #hall-location,
+    #seating-capacity,
+    #hall-name {
+      width: -webkit-fill-available;
+      height: auto;
+      overflow-y: auto;
+    }
+    input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border: 2px solid #1879b7;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+    }
+    input[type="checkbox"]:checked {
+      background-color: #1879b7;
+    }
+    input[type="checkbox"]:checked::before {
+      content: "\2714";
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 16px;
+    }
+    .technical-info {
+      background-color: #d9d9d9;
+      border-radius: 10px;
+      padding: 20px;
+      width: 90%;
+      margin: 0 auto 20px;
+      box-sizing: border-box;
+    }
+    .tech-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .tech-label {
+      flex: 1;
+    }
+    .tech-value {
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 23px;
+    }
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column-reverse; /* Reverses the order on small screens */
+      }
+      .image-section,
+      .info-section {
+        width: 100%;
+      }
+      .hall-image {
+        max-width: 35%; /* Full width for smaller screens */
+      }
+    }
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0s, opacity 0.3s ease;
+  }
+
+  .popup-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: 300px;
+  }
+
+  .popup .alert {
+      font-size: 16px;
+      margin-bottom: 15px; 
+  }
+  .alert.success {
+      color: #155724 ;
+  }
+  .alert.error{
+      color: #721c24 ;
+  }
+
+  .close-popup {
+      background-color: #284b63;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  }
+
+  .close-popup:hover {
+      background-color: #1c3d5a;
+  }
+
+  .popup.show {
+      visibility: visible;
+      opacity: 1;
+  }
+  </style>
+
+
+{% block content %}
+<div class="seminar-hall-details">
+    <main class="main-content">
+      {% if messages %}
+          <div id="message-popup" class="popup">
+              <div class="popup-content">
+                  {% for message in messages %}
+                      <p class="alert {{ message.tags }}">{{ message }}</p>
+                  {% endfor %}
+                  <button class="close-popup" onclick="closePopup()">Close</button>
+              </div>
+          </div>
+      {% endif %}
+        <section class="image-section">
+            <img src="{% static 'images/' %}{{ institute_name|lower|cut:" " }}.png" alt="Seminar Hall" class="hall-image" />
+            
+            <a id="book-link" href="#" style="text-decoration: none;">
+              <button class="book-button">Book</button>
+          </a>
+
+        </section>
+
+        <!-- Seminar Hall Information Section -->
+        <section class="info-section">
+            <h2 class="section-title">Basic Information</h2>
+            <div class="info-container">
+                <div class="info-row">
+                    <label for="hall-name" class="info-label">Name Of Seminar-Hall:</label>
+                    <select id="hall-name" class="info-value" aria-label="Name of Seminar Hall" data-institute="{{ institute_name }}" onchange="fetchHallDetails()">
+                      <option value="" disabled selected>Select a Hall</option>
+                      {% for hall in halls %}
+                          <option value="{{ hall.hall_name }}">{{ hall.hall_name }}</option>
+                      {% endfor %}
+                  </select>
+                </div>
+                <div class="info-row">
+                    <label for="hall-location" class="info-label">Location:</label>
+                    <input type="text" id="hall-location" class="info-value" aria-label="Location" readonly />
+                </div>
+                <div class="info-row">
+                    <label for="seating-capacity" class="info-label">Seating Capacity:</label>
+                    <input type="text" id="seating-capacity" class="info-value" aria-label="Seating Capacity" readonly />
+                </div>
+            </div>
+
+            <h2 class="section-title" id="one">Technical Information</h2>
+            <div class="technical-info">
+                <div class="tech-item">
+                    <span class="tech-label">Projectors:</span>
+                    <input type="checkbox" id="projector" name="projector" readonly />
+                </div>
+                <div class="tech-item">
+                    <span class="tech-label">Microphones and speakers:</span>
+                    <input type="checkbox" id="audio" name="audio" readonly />
+                </div>
+                <div class="tech-item">
+                    <span class="tech-label">Internet/Wfi:</span>
+                    <input type="checkbox" id="wifi" name="wifi" readonly />
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    function fetchHallDetails() {
+        const hallName = document.getElementById('hall-name').value;
+        const institute_name = document.getElementById('hall-name').getAttribute('data-institute');
+        const institutename=institute_name;
+        console.log('Selected Hall Name:', hallName); // Check if the hall name is correct
+
+        fetch(`/get_hall_details_by_name/${hallName}/${institute_name}/`)
+            .then(response => {
+                console.log('Response Status:', response.status); // Log the status to check if the request is successful
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received Data:', data); // Log the response data to inspect it
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+                document.getElementById('hall-location').value = data.location;
+                document.getElementById('seating-capacity').value = data.capacity;
+                document.getElementById('projector').checked = data.projector;
+                document.getElementById('audio').checked = data.audio;
+                document.getElementById('wifi').checked = data.wifi;
+
+                 const bookLink = document.getElementById('book-link');
+                bookLink.href = "{% url 'book_hall' 'hall_name_placeholder' 'institute_name_placeholder' %}".replace('hall_name_placeholder', hallName).replace('institute_name_placeholder', institutename);
+            })
+            .catch(error => console.error('Error fetching hall details:', error));
+    }
+
+    // Attach the function to the select element's onchange event
+    document.getElementById('hall-name').onchange = fetchHallDetails;
+
+});
+function showPopup() {
+  const popup = document.getElementById('message-popup');
+  popup.classList.add('show');
+}
+
+
+function closePopup() {
+  const popup = document.getElementById('message-popup');
+  popup.classList.remove('show');
+}
+
+window.onload = function() {
+  const popup = document.getElementById('message-popup');
+  if (popup) {
+      showPopup();
+  }
+}
+</script>
+{% endblock %}
