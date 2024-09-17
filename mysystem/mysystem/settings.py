@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+SITE_ID=3
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,7 +38,23 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bookingsystem',
+    "django.contrib.sites",
+    'allauth',
+    'allauth.account', 
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google'
 ]
+
+SOCIALACCOUNT_PROVIDERS ={
+    "google":{
+        "SCOPE":[
+            "profile",
+            "email"
+        ],
+        "AUTH_PARAMS":{"access_type":"online",
+                       'prompt': 'select_account', }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -48,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'mysystem.urls'
@@ -77,14 +94,13 @@ WSGI_APPLICATION = 'mysystem.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Main_Data',
-        'USER': 'root',
-        'PASSWORD':'1125',
+        'NAME':'Main_Data' ,  # note that this name should be same as the name in mydb which is in create my db ..
+        'USER':'root',
+        'PASSWORD':'MySQL',
         'HOST':'localhost',
         'PORT':'3306',
-        
     }
 }
 
@@ -143,3 +159,12 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'yashvasani784@gmail.com'
 EMAIL_HOST_PASSWORD = 'vfkmjfbxlqvgyiqz'
 DEFAULT_FROM_EMAIL = 'yashvasani784@gmail.com'
+
+AUTHENTICATION_BACKENDS=(
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+)
+
+LOGIN_REDIRECT_URL = '/main'
+LOGOUT_REDIRECT_URL ='/'

@@ -10,7 +10,7 @@ def create_user_related_data(sender, instance, created, **kwargs):
         data.objects.create(
             username=instance.username, 
             email=instance.email,
-            status=[3]  # Default status value as empty list
+            status=[1,2]  # Default status value as empty list
         )
         
         # # Create a corresponding object in the `admin_data` model

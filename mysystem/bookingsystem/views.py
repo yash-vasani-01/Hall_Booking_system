@@ -15,15 +15,69 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from datetime import datetime
 from datetime import datetime, date
+from django.contrib.sessions.backends.db import SessionStore #type:ignore
+from django.views.decorators.csrf import csrf_protect #type:ignore
+import os
 
 
 def welcome(request):
     return render(request,'welcome.html')
+#-----------------------------------------------------------------------------------
 def home(request):
     alldata=data.objects.all()
     return render(request,'index1.html',{'alldata':alldata})
+#-----------------------------------------------------------------------------------
+import random
+import base64
+from PIL import Image
+from captcha.image import ImageCaptcha
+from io import BytesIO
+
+def load_words_from_file(captcha_name: str) -> list:
+    """Load words from a text file into a list."""
+    # Construct the file path relative to the current file's directory
+    file_path = os.path.join(os.path.dirname(__file__), captcha_name)
+    with open(file_path, 'r') as file:
+        words = [line.strip() for line in file]
+    return words
+
+def generate_captcha() -> tuple:
+    """Generate CAPTCHA using a random word from a file."""
+    words = load_words_from_file('captcha_name.txt')  # Load words from 'words.txt'
+    captcha_text = random.choice(words)  # Select a random word from the file
+    
+    captcha = ImageCaptcha(
+        width=200,
+        height=50,
+        fonts=['C:/Windows/Fonts/arial.ttf'],  # Ensure this path is correct
+        font_sizes=(40, 50, 60),
+    )
+    
+    data = captcha.generate(captcha_text)
+    image = Image.open(data)
+    
+    # Convert the image to base64 for embedding in the response
+    buffer = BytesIO()
+    image.save(buffer, format='PNG')
+    encoded_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    
+    return encoded_image, captcha_text
+
+def captcha_image(request):
+    """Return the CAPTCHA image stored in the session."""
+    encoded_image = request.session.get('captcha_image')
+    if encoded_image:
+        image = base64.b64decode(encoded_image)
+        return HttpResponse(image, content_type='image/png')
+    return HttpResponse('Captcha not found', status=404)  # Corrected status code
+
+#-----------------------------------------------------------------------------------
 def login_(request):
     # Check if the user is already authenticated
+    encoded_image, captcha_text = generate_captcha()
+    request.session['captcha_text'] = captcha_text
+    request.session['captcha_image'] = encoded_image
+
     if request.user.is_authenticated:
         user_status = data.objects.filter(email=request.user.email).first()
         if user_status:
@@ -41,33 +95,124 @@ def login_(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        captcha_text = request.session.get('captcha_text')
+        user_captcha = request.POST.get('captcha')
 
-        # Authenticate using the provided username and password
-        user = authenticate(request, username=username, password=password)
 
-        if user is not None:
-            user_status = data.objects.filter(email=user.email).first()
-            if user_status:
-                # Check if user has the required status
-                if 1 in user_status.status and 2 in user_status.status:
-                    login(request, user)
-                    return redirect('role')  # Redirect to role selection if both statuses are present
-                elif 1 in user_status.status :
-                    login(request, user)
-                    messages.success(request, "Successful log in")
-                    return redirect('admin_page')  # Redirect to home if user has appropriate status
-                elif 2 in user_status.status :
-                    login(request, user)
-                    messages.success(request, "Successful log in")
-                    return redirect('faculty_page')  # Redirect to home if user has appropriate status
+        if captcha_text.strip().lower()  == captcha_text.strip().lower():
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                user_status = data.objects.filter(email=user.email).first()
+                if user_status:
+                    # Check if user has the required status
+                    if 1 in user_status.status and 2 in user_status.status:
+                        login(request, user)
+                        return redirect('role')  # Redirect to role selection if both statuses are present
+                    elif 1 in user_status.status :
+                        login(request, user)
+                        messages.success(request, "Successful log in")
+                        return redirect('admin_page')  # Redirect to home if user has appropriate status
+                    elif 2 in user_status.status :
+                        login(request, user)
+                        messages.success(request, "Successful log in")
+                        return redirect('faculty_page')  # Redirect to home if user has appropriate status
+                else:
+                    messages.error(request, "User status not found!")
+                    return redirect('login')
             else:
-                messages.error(request, "User status not found!")
+                messages.error(request, "Log in failed! Check your credentials and try again.")
                 return redirect('login')
         else:
-            messages.error(request, "Log in failed! Check your credentials and try again.")
+            messages.error(request, 'Log in failded! Check your credentials and try again.--captcha')
             return redirect('login')
+    return render(request, 'index.html',context={"captcha_text":captcha_text})
+#------------------------------------------------------------------------------------------------------------
+from django.contrib.auth.tokens import default_token_generator #type:ignore
+from django.core.mail import send_mail #type:ignore
+from django.shortcuts import render, redirect #type:ignore
+from django.contrib.auth.models import User #type:ignore
+from django.urls import reverse #type:ignore
+from .forms import PasswordResetForm #type:ignore
 
-    return render(request, 'index.html')
+def password_reset_request(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            users = User.objects.filter(email=email)
+            if users.exists():
+                user = users.first()
+                token = default_token_generator.make_token(user)
+                reset_url = request.build_absolute_uri(
+                    reverse('password_reset_confirm', kwargs={'uid': user.id, 'token': token})
+                )
+                send_mail(
+                    subject="Password Reset Request",
+                    message=f"Click the link to reset your password: {reset_url}",
+                    from_email="chaudharivirjibhai84.com",
+                    recipient_list=[email],
+                    fail_silently=False,
+                )
+                messages.success(request, "A password reset link has been sent to your email.")
+                return redirect('login')
+    else:
+        form = PasswordResetForm()
+    
+    return render(request, 'password_reset_form.html', {'form': form})
+
+from django.contrib.auth.views import PasswordResetConfirmView #type:ignore
+from django.contrib import messages #type:ignore
+from django.urls import reverse_lazy #type:ignore
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Your password has been successfully changed. You can now log in.')
+        return super().form_valid(form)
+
+
+from django.contrib.auth.tokens import default_token_generator #type:ignore
+from django.contrib.auth import get_user_model #type:ignore
+from django.shortcuts import render, redirect #type:ignore
+from django.utils.http import urlsafe_base64_decode #type:ignore
+from django.contrib.auth.hashers import make_password #type:ignore
+
+User = get_user_model()
+
+def password_reset_confirm(request, uid, token):
+    user = User.objects.get(pk=uid)
+    if default_token_generator.check_token(user, token):
+        if request.method == "POST":
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+            if new_password == confirm_password:
+                user.password = make_password(new_password)
+                user.save()
+                return redirect('password_reset_complete_close_tab')
+        return render(request, 'password_reset_confirm.html', {'validlink': True})
+    else:
+        return render(request, 'password_reset_confirm.html', {'validlink': False})
+
+
+
+
+def password_reset_complete_close_tab(request):
+    # This template sets a flag in localStorage to show the popup
+    return render(request, 'password_reset_complete_close_tab.html')
+
+
+from django.contrib.auth.models import User # type:ignore
+from django.core.mail import send_mail # type:ignore
+from django.utils.http import urlsafe_base64_encode # type:ignore
+from django.utils.encoding import force_bytes # type:ignore
+from django.template.loader import render_to_string # type:ignore
+from django.contrib.sites.shortcuts import get_current_site # type:ignore
+from django.utils import timezone # type:ignore
+from .tokens import account_activation_token
+from datetime import timedelta
+from .validators import CustomPasswordValidator
+from django.core.exceptions import ValidationError # type:ignore
 
 def register(request):
     if request.method == 'POST':
@@ -75,6 +220,7 @@ def register(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         confirm_password = request.POST['confirm_password']
+        password_validator = CustomPasswordValidator()
 
         # Validate password using CustomPasswordValidator
         password_validator = CustomPasswordValidator()
@@ -101,10 +247,53 @@ def register(request):
         # If all validations pass, create the user
         newuser = User.objects.create_user(username, email, password)
         newuser.save()
-        messages.success(request, "Your account has been created successfully")
-        return redirect('login')
+         # Send activation email
+        current_site = get_current_site(request)
+        mail_subject = 'Activate your account.'
+        message = render_to_string('activate_email.html', {
+            'user': newuser,
+            'domain': current_site.domain,
+            'uid': urlsafe_base64_encode(force_bytes(newuser.pk)),
+            'token': account_activation_token.make_token(newuser),
+        })
+        to_email = email
+        send_mail(mail_subject, message, 'chaudharivirjibhai84@gmail.com', [to_email])
 
+        # Inform the user to check their email for activation
+        messages.success(request, "Your account has been created successfully. Please check your email to activate your account.")
+        return redirect('login')
     return render(request, 'register.html')
+
+from django.utils.http import urlsafe_base64_decode # type:ignore
+from django.utils.encoding import force_str # type:ignore
+from django.contrib.auth.models import User # type:ignore
+from .tokens import account_activation_token # type:ignore
+from django.utils import timezone # type:ignore
+from datetime import timedelta
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    # Check if the token is valid and user is within the 10-minute window
+    token_validity_period = timedelta(minutes=10)
+    token_expiration = user.date_joined + token_validity_period
+
+    if user is not None and account_activation_token.check_token(user, token):
+        if timezone.now() <= token_expiration:
+            user.is_active = True
+            user.save()
+            return redirect('login')
+        else:
+            user.delete()  # Remove the user if the token has expired
+            return render(request, 'activation_link_expired.html')
+    else:
+        return render(request, 'activation_invalid.html')
+
+#-----------------------------------------------------------------------------------
 
 def logout_(request):
     logout(request)
