@@ -1,128 +1,175 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<style>
-    body, html {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow: hidden;
-        font-family: 'Arial', sans-serif;
-    }
-    .login-container {
-        background-color: #afc2cd;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 20px;
-        box-sizing: border-box;
-    }
-    .login-content {
-        display: flex;
-        width: 100%;
-        max-width: 1200px;
-        gap: 20px;
-        justify-content: space-between;
-        align-items: flex-start;
-        flex: 1;
-        min-height: 0;
-    }
-    .login-image {
-        width: 30%;
-        max-height: 40vh;
-        object-fit: contain;
-        margin-top: 13%;
-        margin-left: 8%;
-    }
-    .login-form-wrapper {
-        width: 50%;
-        height: 85vh;
-        border-radius: 20px;
-        background-color: #fff;
-        padding: 30px;
-        box-sizing: border-box;
-        overflow-y: auto;
-    }
-    .login-form {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
-    .login-title {
-        text-align: center;
-        font: bold 42px 'Khula', sans-serif;
-        margin-top: -20px;
-    }
-    .form-label {
-        font: 20px 'Khula', sans-serif;
-        margin-top: 10px;
-        margin-bottom: -9px;
-    }
-    .form-input {
-        border-radius: 10px;
-        background-color: #f9f7f7;
-        height: 50px;
-        border: 2px solid #000;
-        margin-top: 8px;
-        padding: 0 15px;
-        font-size: 18px;
-    }
-    .login-button {
-        border-radius: 10px;
-        background-color: #284b63;
-        color: #fff;
-        padding: 12px;
-        font: bold 22px 'Inter', sans-serif;
-        border: none;
-        cursor: pointer;
-        margin-top: 20px;
-        width: 35%;
-        align-self: center;
-    }
-    .register-prompt {
-        font-family: 'Inter', sans-serif;
-        text-align: center;
-        margin-top: 25px;
-        margin-bottom: -15px;
-        font-size: 18px;
-        cursor: pointer;
-    }
-    .register-button {
-        font-family: 'Inter', sans-serif;
-        border-radius: 10px;
-        background-color: #284b63;
-        cursor: pointer;
-        color: #fff;
-        align-self: center;
-        font-weight: 500;
-        padding: 10px;
-        width: 30%;
-        text-decoration: none;
-        text-align: center;
-        margin-top: 19px;
-        margin-bottom: -14px;
-        font-size: 18px;
-    }
-    @media (max-width: 768px) {
-        .login-content {
-            flex-direction: column;
-        }
-        .login-image, .login-form-wrapper {
+{% load socialaccount %}
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
             width: 100%;
-            max-height: none;
+            font-family: Inter, sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden; /* Prevent scrolling */
         }
-        .login-image {
-            max-height: 30vh;
-            margin-bottom: 20px;
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full viewport height */
+            width: 100vw; /* Full viewport width */
+            background-color: #afc2cd;
         }
-        .login-form-wrapper {
+
+        .header-image-wrapper {
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+            height: 80px; /* Adjust height as needed */
+        }
+
+        .header-image {
+            max-width: 150px; /* Adjust size as needed */
             height: auto;
-            overflow-y: visible;
         }
-    }
-    .popup {
+
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            max-height: 90%;
+            justify-content: space-evenly;
+            align-items: center;
+            padding: 20px;
+            padding-top: 0;
+            box-sizing: border-box;
+        }
+
+        .side-image {
+            width: 40%;
+            max-width: 250px;
+            object-fit: contain;
+            border-radius: 20px;
+        }
+
+        .login-form-container {
+            width: 80vw; /* Adjust to fit the viewport width */
+            max-width: 580px; /* Maximum width */
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            padding-top: 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+        }
+
+        .login-form-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%; /* Ensure it uses the full width of the container */
+        }
+
+        .login-title {
+            color: #635e5e;
+            text-align: center;
+            padding-top: 9px;
+        }
+
+        .divider {
+            background-color: #000;
+            height: 2px;
+            border: none;
+            margin: 0 0 15px 0;
+        }
+
+        .form-fields {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            width: 90%; /* Adjust width of each form row */
+            margin-bottom: 15px; /* Add some spacing between rows */
+        }
+
+        .input-label {
+            color: #000;
+            font-weight: 400;
+            margin-right: 10px;
+            flex-shrink: 0;
+            width: 80px; /* Fix label width to align the inputs */
+        }
+
+        .input-field {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .login-button, .forgot-password, .register-button {
+            background-color: #284b63;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            width: 25%;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-button:hover, .register-button:hover {
+            background-color: #1c3d5a;
+        }
+
+        .forgot-password {
+            width: 95%;
+            background-color: transparent;
+            color: #284b63;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .register-wrapper {
+            text-align: center;
+            margin-top: 0;
+        }
+        /* Style for CAPTCHA reload button */
+.reload-captcha-button {
+    background-color: #284b63;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 18%; /* Add some spacing between the CAPTCHA image and button */
+    transition: background-color 0.3s ease;
+}
+
+.reload-captcha-button:hover {
+    background-color: #1c3d5a; /* Same hover effect as the login button */
+}
+.popup {
         position: fixed;
         top: 0;
         left: 0;
@@ -136,7 +183,7 @@
         opacity: 0;
         transition: visibility 0s, opacity 0.3s ease;
     }
-  
+
     .popup-content {
         background-color: #fff;
         padding: 20px;
@@ -145,18 +192,13 @@
         text-align: center;
         width: 300px;
     }
-  
+
     .popup .alert {
         font-size: 16px;
-        margin-bottom: 15px; 
+        margin-bottom: 15px;
+        color: #e74c3c; /* For error messages */
     }
-    .alert.success {
-        color: #155724 ;
-    }
-    .alert.error{
-        color: #721c24 ;
-    }
-  
+
     .close-popup {
         background-color: #284b63;
         color: #fff;
@@ -166,62 +208,103 @@
         cursor: pointer;
         transition: background-color 0.3s ease;
     }
-  
+
     .close-popup:hover {
         background-color: #1c3d5a;
     }
-  
+
     .popup.show {
         visibility: visible;
         opacity: 1;
     }
-</style>
 
-<body>
-    
-    <section class="login-container">
-        <div class="login-content">
-            <img loading="lazy" src="{% static 'images/logo1.png' %}" class="login-image" alt="Login illustration" />
-            <div class="login-form-wrapper">
-                {% if messages %}
-                    <div id="message-popup" class="popup">
-                        <div class="popup-content">
-                            {% for message in messages %}
-                                <p class="alert {{ message.tags }}">{{ message }}</p>
-                            {% endfor %}
-                            <button class="close-popup" onclick="closePopup()">Close</button>
-                        </div>
-                    </div>
-                {% endif %}
-                <form class="login-form" method="post" action="{% url 'login' %}">
-                    {% csrf_token %}
-                    <h1 class="login-title">Login</h1>
-                    <hr style="width:100%;text-align:left;margin-left:0;margin-top:-10px">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" id="username" class="form-input" name='username' required />
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" id="email" class="form-input" name='email' required />
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" class="form-input" name='password' required />
-                    <button type="submit" class="login-button">Login</button>
-                    <p class="register-prompt">New User?</p>
-                    <a href="{% url 'register' %}" class="register-button" role="button">Register</a>
-                </form>
-            </div>
-        </div>
-    </section>
+    .button-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Full width for the button row */
+    margin-top: 15px;
+}
+
+.or-text {
+    margin: 0 10px; /* Add some spacing between the buttons */
+    color: #635e5e; /* Match the text color */
+    font-size: 16px;
+}
+
+.google-login-button {
+    background-color: #1c3d5a; /* Google blue color */
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    margin-top: 13px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    width: 45%; /* Match the width of the Login button */
+    transition: background-color 0.3s ease;
+}
+
+
+
+        /* Mobile View Adjustments */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .side-image {
+                display: none; /* Hide logo on mobile */
+            }
+
+            .login-form-container {
+                width: 90vw; /* Full width for mobile */
+                max-width: none; /* Remove max-width constraint */
+                height: auto; /* Remove fixed aspect ratio */
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            }
+
+            .form-row {
+                width: 100%; /* Full width of form rows on mobile */
+                margin-bottom: 10px; /* Slightly smaller spacing */
+            }
+
+            .input-field {
+                font-size: 14px; /* Smaller input text for mobile */
+                padding: 10px; /* Reduced padding */
+            }
+
+            .login-button, .register-button {
+                width: 80%; /* Full width buttons on mobile */
+                font-size: 14px; /* Slightly smaller font size */
+                padding: 12px; /* Adjust button padding */
+            }
+
+            .forgot-password {
+                font-size: 14px; /* Smaller font for mobile */
+                text-align: center; /* Center forgot password link */
+                width: 100%; /* Full width link */
+            }
+        }
+    </style>
     <script>
+        // Function to show the popup
         function showPopup() {
             const popup = document.getElementById('message-popup');
             popup.classList.add('show');
         }
     
-       
+        // Function to close the popup
         function closePopup() {
             const popup = document.getElementById('message-popup');
             popup.classList.remove('show');
         }
     
+        // Automatically show popup if there are messages
         window.onload = function() {
             const popup = document.getElementById('message-popup');
             if (popup) {
@@ -229,4 +312,66 @@
             }
         }
     </script>
-{% endblock %}
+
+</head>
+<body>
+    <div class="login-container">
+        <div class="content-wrapper">
+            <img loading="lazy" src="{% static 'images/logo1.png' %}" class="side-image" alt="Side image" />
+            <main class="login-form-container">
+                <div class="login-form-wrapper">
+                    {% if messages %}
+                        <div id="message-popup" class="popup">
+                            <div class="popup-content">
+                                {% for message in messages %}
+                                    <p class="alert {{ message.tags }}">{{ message }}</p>
+                                {% endfor %}
+                                <button class="close-popup" onclick="closePopup()">Close</button>
+                            </div>
+                        </div>
+                    {% endif %}
+    
+                    <h1 class="login-title">Login</h1>
+                    <hr class="divider" />
+                    <form class="form-fields" method="POST" action="{% url 'login' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <label for="email" class="input-label">Email*</label>
+                            <input type="email" id="email" name="email" class="input-field" required />
+                        </div>
+                        <div class="form-row">
+                            <label for="username" class="input-label">Username*</label>
+                            <input type="text" id="username" name="username" class="input-field" required />
+                        </div>
+                        <p>{{captcha_text}}</p>
+                        <div class="form-row">
+                            <label for="password" class="input-label">Password*</label>
+                            <input type="password" id="password" name="password" class="input-field" required />
+                        </div>
+                        <!-- CAPTCHA Section -->
+                        <div class="form-row">
+                            <label for="captcha" class="input-label">Captcha*</label>
+                            <input type="captcha" id="captcha" name="captcha" class="input-field" required />
+                        </div>
+                        <div class="form-row">
+                            <img src="{% url 'captcha_image' %}" alt="CAPTCHA Image" />
+                            <button type="button" class="reload-captcha-button" onclick="location.reload()">Reload CAPTCHA</button>
+                        </div>                        
+                        <div class="button-row">
+                            <button type="submit" class="login-button">Login</button>
+                            <span class="or-text">or</span>
+                            <a href="{% provider_login_url 'google' %}?next=/" class="google-login-button">Login with Google</a>
+                        </div>                        
+                        <a href="{% url 'password_reset' %}" class="forgot-password">Forget password?</a>
+                    </form>
+    
+                    <hr class="divider" />
+                    <div class="register-wrapper">
+                        <a href="{% url 'register' %}" class="register-button">Register</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>    
+    </body>
+        {% endblock %}
